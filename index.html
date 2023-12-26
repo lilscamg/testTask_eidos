@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Test task</title>
+        <link rel="stylesheet" href="styles.css">
+        <script src="script.js"></script>
+        <!-- vue -->
+        <script src="https://unpkg.com/vue@next"></script>
+        <!-- bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div id="app">
+            <div class="container-fluid p-0 m-0">
+                <!-- общее меню для всех разделов -->
+                <div class="menu p-3" v-bind:class="{'menu-collapsed': menuCollapsed, 'menu-open': !menuCollapsed}">
+                    <div class="nav-header row align-items-center">
+                        <div @click="collapseMenu" class="col-auto ps-2"><img src="assets/images/logo.png" alt="" style="cursor: pointer"></div>
+                        <div v-show="!menuCollapsed" class="col p-0">{{navTitle}}</div>
+                    </div>
+                    <nav class="my-3">
+                        <div class="row menu-item align-items-center" v-for="item in menuItemTitles" v-bind:class="{'active-item': menuItemActive === item}" v-on:click="menuItemActive=item" style="cursor: pointer">
+                            <div class="col-auto ms-2 pr-0">
+                                <img v-bind:src="menuItemImagePath + item + '.png'" alt="">
+                            </div>
+                            <div class="col pr-0" v-show="!menuCollapsed">{{item}}</div>
+                        </div>
+                    </nav>
+                    <div class="nav-footer"></div>
+                </div>
+                <div class="content-container w-100">
+                    <!-- вставлять сюда компоненты -->
+                    <div class="content p-4">
+                        <div class="content-header d-flex flex-row justify-content-between">
+                            <div class="content-title mb-4">{{menuItemActive}}</div>
+                            <div class="content-filter">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="find-input">
+                                            <img src="assets/images/find.png" alt="">
+                                            <input type="text" v-model="nameFilter" placeholder="Поиск"></div>
+                                        </div>
+                                        
+                                    <div class="col"></div>
+                                    <div class="col"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-striped">
+                                <tr>
+                                    <th style="cursor: pointer;" @click="sortBy('date')">Дата и время</th>
+                                    <th style="cursor: pointer;" @click="sortBy('status')" style="width: 12%">Статус</th>
+                                    <th style="cursor: pointer;" @click="sortBy('name')">Название учебного модуля</th>
+                                    <th style="cursor: pointer;" @click="sortBy('type')">Тип сессии</th>
+                                    <th style="cursor: pointer;" @click="sortBy('room')">Комната</th>
+                                    <th style="cursor: pointer;" @click="sortBy('group')">Группа</th>
+                                </tr>
+                                <tr v-for="session in resultSessions">
+                                    <!-- getDateStr не успел красиво сделать даты -->
+                                    <td>{{session.date}}</td>
+                                    <td>
+                                        <div v-bind:class="{planned: session.status === 'Запланировано', underway: session.status === 'Идет', completed: session.status === 'Завершено'}">
+                                            {{session.status}}
+                                        </div>
+                                    </td>
+                                    <td>{{session.name}}</td>
+                                    <td>{{session.type}}</td>
+                                    <td>{{session.room}}</td>
+                                    <td>{{session.group}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="row mt-2 mx-1 py-2 pagination">
+                            <div class="col-auto"><button @click="getNextPage(currentPage - 1)">&lt;</button></div>
+                            <div v-for="n in Math.ceil(sessions.length / totalRowsPerOnePage)" class="col-auto">
+                                <button @click="getNextPage(n)" v-bind:class="{'active-page': currentPage === n}">{{n}}</button>
+                            </div>
+                            <div class="col-auto"><button @click="getNextPage(currentPage + 1)">&gt;</button></div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+<script>
+    Vue.createApp({
+        data() {
+            return {
+                navTitle: 'Сим Центр',
+                menuCollapsed: true,
+                menuItemTitles: ['Расписание', 'Учебные сессии', 'Список комнат', 'Пользователи', 'Учебные группы', 'Список устройств', 'Настройки системы', 'Архив'],
+                menuItemImagePath: 'assets/images/menu images/',
+                nameFilter: "",
+                menuItemActive: 'Учебные сессии',
+                sessions: [
+                    {date: new Date('2023-07-15T12:00'), status:'Запланировано', name: 'Ультразвуковое исследование органов брюшной полости и забрюшинного пространства', type: 'Урок', room: 'Комната 5, Комната 6, Комната 7', group: 'ТП-31'}, 
+                    {date: new Date('2023-07-15T13:00'), status:'Запланировано', name: 'Ультразвуковое абдоминальное исследование мочевого пузыря (для мужчин) и предстательной железы', type: 'Аккредитация', room: 'Комната 6', group: '420-11КС'},
+                    {date: new Date('2023-07-14T12:00'), status:'Запланировано', name: 'Реанимация новорожденных', type: 'Урок', room: 'Комната 1, Комната 2', group: '240011С'},
+                    {date: new Date('2023-06-05T13:00'), status:'Идет', name: 'Акушерство и гинекология', type: 'Экзамен', room: 'Комната 6', group: 'ТП-31'},
+                    {date: new Date('2023-06-05T12:00'), status:'Завершено', name: 'Ультразвуковое абдоминальное исследование мочевого пузыря (для мужчин) и предстательной железы', type: 'Аккредитация', room: 'Комната 6', group: 'КЛ-98'},
+                    {date: new Date('2023-06-05T11:00'), status:'Завершено', name: 'Ультразвуковое абдоминальное исследование мочевого пузыря и предстательной железы', type: 'Аккредитация', room: 'Комната 6', group: '410011С'},
+                    {date: new Date('2023-06-04T12:00'), status:'Завершено', name: 'Базовые навыки в ультразвуковом иследовании', type: 'Урок', room: 'Комната 6', group: 'КЛ-98'},
+                    {date: new Date('2023-07-15T12:00'), status:'Запланировано', name: 'Ультразвуковое исследование органов брюшной полости и забрюшинного пространства', type: 'Урок', room: 'Комната 5, Комната 6, Комната 7', group: 'ТП-31'}, 
+                    {date: new Date('2023-07-15T13:00'), status:'Запланировано', name: 'Ультразвуковое абдоминальное исследование мочевого пузыря (для мужчин) и предстательной железы', type: 'Аккредитация', room: 'Комната 6', group: '420-11КС'},
+                    {date: new Date('2023-07-14T12:00'), status:'Запланировано', name: 'Реанимация новорожденных', type: 'Урок', room: 'Комната 1, Комната 2', group: '240011С'},
+                    {date: new Date('2023-06-05T13:00'), status:'Идет', name: 'Акушерство и гинекология', type: 'Экзамен', room: 'Комната 6', group: 'ТП-31'},
+                    {date: new Date('2023-06-05T12:00'), status:'Завершено', name: 'Ультразвуковое абдоминальное исследование мочевого пузыря (для мужчин) и предстательной железы', type: 'Аккредитация', room: 'Комната 6', group: 'КЛ-98'},
+                    {date: new Date('2023-06-05T11:00'), status:'Завершено', name: 'Ультразвуковое абдоминальное исследование мочевого пузыря и предстательной железы', type: 'Аккредитация', room: 'Комната 6', group: '410011С'},
+                    {date: new Date('2023-06-04T12:00'), status:'Завершено', name: 'Базовые навыки в ультразвуковом иследовании', type: 'Урок', room: 'Комната 6', group: 'КЛ-98'},
+                    
+                ],
+                resultSessions: [],
+                currentPage: 1,
+                totalRowsPerOnePage: 10
+            }
+        },
+        created() {
+            this.getNextPage(this.currentPage);
+        },
+        methods: {
+            collapseMenu() {
+                this.menuCollapsed = !this.menuCollapsed;
+            },
+            getNextPage(pageNumber) {
+                if (pageNumber < 1 || pageNumber > Math.ceil(this.sessions.length / this.totalRowsPerOnePage))
+                    return
+                let startIndex = (pageNumber - 1) * this.totalRowsPerOnePage;
+                let endIndex = startIndex + this.totalRowsPerOnePage;
+                if (endIndex < this.sessions.length)
+                    this.resultSessions = this.sessions.slice(startIndex, endIndex);
+                else
+                    this.resultSessions = this.sessions.slice(startIndex, this.sessions.length);
+                this.currentPage = pageNumber;
+
+            },
+            sortBy(key) {
+                switch(key) {
+                    case 'date':
+                        this.resultSessions.sort((a, b) => b.date - a.date)
+                        break;
+                    case 'name':
+                        this.resultSessions.sort((a, b) => {                            
+                            return a.name.localeCompare(b.name);});
+                        break;
+                    case 'status':
+                        this.resultSessions.sort((a, b) => {                            
+                            return a.status.localeCompare(b.status);});
+                        break;
+                    case 'group':
+                        this.resultSessions.sort((a, b) => {                            
+                            return a.group.localeCompare(b.group);});
+                        break;
+                    case 'type':
+                        this.resultSessions.sort((a, b) => {                            
+                            return a.type.localeCompare(b.type);});
+                        break;
+                    case 'room':
+                        this.resultSessions.sort((a, b) => {                            
+                            return a.room.localeCompare(b.room);});
+                        break;
+                }
+            },
+            getDateStr(date) {
+
+            }
+        },
+        watch: {
+            nameFilter: function (newValue) {
+                this.resultSessions = this.sessions.filter(x => x.name.toLowerCase().includes(newValue.toLowerCase()));
+            }
+        }
+
+    }).mount('#app');
+</script>

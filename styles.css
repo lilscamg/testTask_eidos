@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.container-fluid {
+    background-color:#F4F4F4;
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.menu {
+    background-color: #FFFFFF;
+}
+
+.menu-open {
+    width: 320px;
+}
+
+.menu-collapsed {
+    width: 80px;
+}
+
+.nav-header {
+    font-weight: 800;
+    font-size: 24px;
+}
+
+nav {
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+}
+
+.menu-item {
+    padding: 10px;
+}
+
+.active-item {
+    background-color: #3761F3;
+    border-radius: 16px;
+    color:#FFFFFF;
+}
+
+.content {
+    background-color: #FFFFFF;
+    margin: 10px;
+    border-radius: 12px 12px 0 0;
+    height: 100vh;
+}
+
+.content-title {
+    font-weight: 800;
+    font-size: 24px;
+    
+}
+
+.find-input {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #E0E0E0;
+    border-radius: 15px;
+    padding: 8px;
+}
+
+.find-input img {
+    margin-right: 5px;
+}
+
+.find-input input[type='text'] {
+    border: none;
+    font-size: 13px;
+}
+
+.find-input input[type='text']:focus {
+    outline: none;
+    border: none; 
+}
+
+table td {
+    vertical-align: middle;
+}
+
+.table-container {
+    height: 78vh;
+    overflow-y: auto;
+}
+
+.table {
+    border-radius: 12px 12px 0 0;
+   
+}
+
+table th {
+    font-size: 17px;
+}
+
+table td {
+    font-size: 15px;
+}
+
+.planned {
+    background-color: #AFBFF5;
+    border-radius: 43px;
+    text-align: center;
+    padding: 5px;
+    font-size: 12px;
+}
+
+.underway {
+    background-color: #FFDAA1;
+    border-radius: 43px;
+    text-align: center;
+    padding: 3px;
+    font-size: 12px;
+}
+
+.completed {
+    background-color: #91C893;
+    border-radius: 43px;
+    text-align: center;
+    padding: 3px;
+    font-size: 12px;
+}
+
+.pagination {
+    background-color: #F5F7F9;
+}
+
+.pagination .col-auto button {
+    border: none;
+    background-color: #FFFFFF;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+}
+
+.pagination .col-auto button:hover {
+    border: 1px solid #3761F3;
+    color: #3761F3;
+}
+
+.pagination .col-auto .active-page {
+    background-color: #E0E0E0 !important;
+}
